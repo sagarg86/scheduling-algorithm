@@ -1,9 +1,5 @@
 {
   "C_Cpp_Runner.cCompilerPath": "C:\\TDM-GCC-32\\bin\\gcc.exe",
   "C_Cpp_Runner.cppCompilerPath": "C:\\TDM-GCC-32\\bin\\g++.exe",
-  "C_Cpp_Runner.makePath": "C:\\TDM-GCC-32\\bin\\mingw32-make.exe",
-  "files.associations": {
-    "*.c": "c",
-    "iostream": "cpp"
-  }
+  "C_Cpp_Runner.makePath": "C:\\TDM-GCC-32\\bin\\mingw32-make.exe"
 }
