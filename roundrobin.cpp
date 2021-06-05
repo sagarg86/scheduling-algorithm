@@ -1,69 +1,168 @@
-#include <iostream>
-#include <vector>
+#include<iostream>
+#include<algorithm>
 using namespace std;
+struct node{
+    int pname;
+    int btime;
+    int atime;
+    int restime=0;
+    int ctime=0;
+    int wtime=-1;
+}a[100],b[100],c[100];
+void insert(int n){
+    int i;
+    for(i=0;i<n;i++){
+        cin>>a[i].pname;
+        cin>>a[i].atime;
+        cin>>a[i].btime;
+        a[i].wtime=-a[i].atime;
+    }
+}
+bool btimeSort(node a,node b){
+    return a.btime < b.btime; 
+}
+bool atimeSort(node a,node b){
+    return a.atime < b.atime; 
+}
+int k=0,f=0,r=0;
+void disp(int nop,int qt){
+    int n=nop,q;
+    sort(a,a+n,atimeSort);
+    int ttime=0,i;
+    int j,tArray[n];
+    int alltime=0;
+    bool moveLast=false;
+    for(i=0;i<n;i++){
+        alltime+=a[i].btime;
+    }
+    alltime+=a[0].atime;
+    for(i=0;ttime<=alltime;){
+        j=i;
+        while(a[j].atime<=ttime&&j!=n){
+            b[r]=a[j];
+            j++;
+            r++;
+        }
+        if(r==f){
+            c[k].pname='i';
+            c[k].btime=a[j].atime-ttime;
+            c[k].atime=ttime;
+            ttime+=c[k].btime;
+            k++;
+            continue;
+        }
+        i=j;
+        if(moveLast==true){
+            b[r]=b[f];
+            f++;
+            r++;
+        }
+        j=f;
+        if(b[j].btime>qt){
+            c[k]=b[j];
+            c[k].btime=qt;
+            k++;
+            b[j].btime=b[j].btime-qt;
+            ttime+=qt;  
+            moveLast=true;
+            for(q=0;q<n;q++){
+                if(b[j].pname!=a[q].pname){
+                    a[q].wtime+=qt;
+                }
+            }
+        }
+        else{
+            c[k]=b[j];
+            k++;
+            f++;
+            ttime+=b[j].btime;  
+            moveLast=false;
+            for(q=0;q<n;q++){
+                if(b[j].pname!=a[q].pname){
+                    a[q].wtime+=b[j].btime;
+                }
+            }
+        }
+        if(f==r&&i>=n)
+        break;
+    }
+    tArray[i]=ttime;
+    ttime+=a[i].btime;
+    int rtime=0;
+    for(j=0;j<n&&j<6;j++){
+        rtime=0;
+        for(i=0;i<k;i++){
+            if(c[i].pname==a[j].pname){
+                a[j].restime=rtime;
+                break;
+            }
+            rtime+=c[i].btime;
+        }
+    }
+    float averageWaitingTime=0;
+    float averageResponseTime=0;
+    float averageTAT=0;
+   rtime=0;
+    for (i=0; i<k+1&&i<20; i++){
+        if(i!=k)
+            
+        rtime+=c[i].btime;
+        for(j=0;j<6;j++){
+            if(a[j].pname==c[i].pname)
+                a[j].ctime=rtime;
+        } 
+    }
+    cout<<"\n";
+    rtime=0;
+    for (i=0; i<k+1&&i<20; i++){
+       
+        tArray[i]=rtime;
+        rtime+=c[i].btime; 
+    }
+    cout<<"\n";
+    cout<<"\n";
+  
+    cout<<"P.Name  AT\tBT\tCT\tTAT\tWT\tRT\n";
+    for (i=0; i<6&&i<nop&&a[i].pname!='i'; i++){
+        if(a[i].pname=='\0')
+            break;
+        cout << a[i].pname << "\t"; 
+        cout << a[i].atime << "\t";
+        cout << a[i].btime << "\t";
+        cout << a[i].ctime << "\t"; 
+        cout << a[i].wtime+a[i].ctime-rtime+a[i].btime << "\t"; 
+        averageTAT+=a[i].wtime+a[i].ctime-rtime+a[i].btime;
+        cout << a[i].wtime+a[i].ctime-rtime << "\t"; 
+        averageWaitingTime+=a[i].wtime+a[i].ctime-rtime;
+        cout << a[i].restime-a[i].atime << "\t";  
+        averageResponseTime+=a[i].restime-a[i].atime;
+        cout <<"\n"; 
+    }
+    cout<<"Average Response time: "<<(float)averageResponseTime/(float)n<<endl;
+    cout<<"Average Waiting time: "<<(float)averageWaitingTime/(float)n<<endl;
+    cout<<"Average TA time: "<<(float)averageTAT/(float)n<<endl;
+}
 int main(){
-	int i,n,time,remain,temps=0,time_quantum;
-    int wt=0,tat=0;
-    cout<<"Enter the total number of process="<<endl;
-	cin>>n;
-    remain=n;
-
-
-	vector<int>at(n);
-	vector<int>bt(n);
-	vector<int>rt(n);
-    cout<<"Enter the Arrival time, Burst time for All the processes"<<endl;
+    int n,choice,i,qt;
+    cout<<"Enter number of processes\n";
+    cin>>n;
+	
 	for(i=0;i<n;i++)
-	{
-		cin>>at[i];
-		cin>>bt[i];
-		rt[i]=bt[i];
-	}
-
-	cout<<"Enter the value of time QUANTUM:"<<endl;
-	cin>>time_quantum;
-
-	cout<<"\n\nProcess\t:Turnaround Time:Waiting Time\n\n";
-	for(time=0,i=0;remain!=0;)
-	{
-		if(rt[i]<=time_quantum && rt[i]>0)
-		{
-			time += rt[i];
-			rt[i]=0;
-			temps=1;
-		}
-
-		else if(rt[i]>0)
-		{
-			rt[i] -= time_quantum;
+	{cout<<"Enter  arrival time for process p"<<i+1<<":";
 		
-			time += time_quantum;
-			
-		}
-
-		if(rt[i]==0 && temps==1)
-		{
-			remain--;
-		
-			cout<<"Process{%d}\t:\t%d\t:\t%d\n";
-            cout<<i+1,time-at[i],time-at[i]-bt[i];
-			cout<<endl;
-
-			wt += time-at[i]-bt[i];
-			tat += time-at[i];
-			temps=0;
-		}
-
-		if(i == n-1)
-			i=0;
-		else if(at[i+1] <= time)
-			i++;
-		else
-			i=0;
+		cin>>a[i].atime;
+	    a[i].pname=i+1;
+		a[i].wtime=-a[i].atime;
 	}
-
-	cout<<"Average waiting time "<<wt*1.0/n<<endl;
-	cout<<"Average turn around time "<<tat*1.0/n<<endl;;
-
-	return 0;
+    for(i=0;i<n;i++)
+	{cout<<"Enter  burst time for process p"<<i+1<<":";
+	
+		cin>>a[i].btime;
+	
+	}
+    cout<<"Enter time quantum\n";
+    cin>>qt;
+   
+    disp(n,qt);
+    return 0;
 }
